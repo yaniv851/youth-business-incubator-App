@@ -1,42 +1,45 @@
-import { View, Text, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Onboarding from './screens/onboarding';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import HomeScreen from './screens/home';
+import { Ionicons } from 'expo-vector-icons';
+
+const Loading = () => {
+  <ActivityIndicator size="large" />
+}
+
 
 function OnboardingScreen() {
-  const navigation = useNavigation();
+  const [loading, setLoading] = useState(true);
+  const [viewedOnboarding, setViewedOnboarding] = useState(false);
+
+  const checkOnboarding = async () => {
+    try {
+      const value = await AsyncStorage.getItem('@viewedOnboarding');
+      if (value !== null) {
+        setViewedOnboarding(true)
+      }
+    } catch (err) {
+      console.log('Error @checkOnboarding: ', err)
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    checkOnboarding();
+  }, []);
+
   return (
-    <View>
-      <Text>Onboarding</Text>
-      <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-        <Text>Hello</Text>
-      </TouchableOpacity>
+    <View style={{ flex: 1 }}>
+      {loading ? <Loading /> : viewedOnboarding ? <HomeScreen /> : <Onboarding />}
     </View>
   );
-}
-
-function SignInScreen() {
-  const handleSignIn = () => {
-    // Perform sign-in logic
-    setIsSignedIn(true);
-  };
-
-  return <Text>Sign in</Text>;
-}
-
-function SignUpScreen() {
-  const handleSignUp = () => {
-    // Perform sign-up logic
-    setIsSignedIn(true);
-  };
-
-  return <Text>Sign Up</Text>;
-}
-
-function HomeScreen() {
-  return <Text>Home</Text>;
 }
 
 function SettingsScreen() {
@@ -49,34 +52,77 @@ function ProfileScreen() {
 
 const Stack = createNativeStackNavigator();
 
-function OnboardingStack() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-      <Stack.Screen name="SignIn" component={SignInScreen} />
-      <Stack.Screen name="SignUp" component={SignUpScreen} />
-    </Stack.Navigator>
-  );
-}
+// function OnboardingStack() {
+//   return (
+//     <Stack.Navigator>
+//       <Stack.Screen name="Onboarding" component={OnboardingScreen} options={{ headerShown: false }} />
+//     </Stack.Navigator>
+//   );
+// }
 
 const Tab = createBottomTabNavigator();
 
 function MainTabNavigator() {
   return (
-    <Tab.Navigator>
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ color, size }) => {
+          let iconName;
+
+          if (route.name == "דף הבית") {
+            iconName = "md-home";
+          }
+          else if (route.name == "חממות קרובות") {
+            iconName = "md-search";
+          }
+          else if (route.name == "פרופיל") {
+            iconName = "md-person";
+          }
+          return <Ionicons name={iconName} size={size} color={color} />
+        }
+      })}
+      tabBarOptions={{
+        activeTintColor: "#D36B0D",
+        inactiveTintColot: "#898989"
+
+      }}
+    >
+      <Tab.Screen name="דף הבית" component={HomeScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="חממות קרובות" component={SettingsScreen} options={{headerShown: false}}/>
+      <Tab.Screen name="פרופיל" component={ProfileScreen} options={{headerShown: false}} />
     </Tab.Navigator>
   );
 }
 
+
 export default function App() {
-  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [viewedOnboarding, setViewedOnboarding] = useState(false);
+
+  const checkOnboarding = async () => {
+    try {
+      const value = await AsyncStorage.getItem('@viewedOnboarding');
+      if (value !== null) {
+        setViewedOnboarding(true);
+      }
+    } catch (err) {
+      console.log('Error @checkOnboarding: ', err);
+    }
+  };
+
+  useEffect(() => {
+    checkOnboarding();
+  }, []);
 
   return (
     <NavigationContainer>
-      {isSignedIn ? <MainTabNavigator /> : <OnboardingStack />}
+      {viewedOnboarding ? (
+        <MainTabNavigator/>
+      ) : (
+        <Stack.Navigator initialRouteName="Onboarding" screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Root" component={MainTabNavigator} />
+          <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+        </Stack.Navigator>
+      )}
     </NavigationContainer>
   );
 }
