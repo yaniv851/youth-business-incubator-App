@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, SafeAreaView, ActivityIndicator } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -53,7 +53,11 @@ function SettingsScreen() {
 }
 
 function ProfileScreen() {
-  return <Text>Profile</Text>;
+  return (
+    <SafeAreaView>
+
+    </SafeAreaView>
+  )
 }
 
 const Stack = createNativeStackNavigator();
@@ -72,7 +76,7 @@ function NestedStackNavigator() {
   const navigation = useNavigation();
 
   return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name='nestedH' component={HomeScreen}
 
       />
