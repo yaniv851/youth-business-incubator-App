@@ -24,8 +24,8 @@ export default function Onboarding() {
             slidesRef.current.scrollToIndex({ index: currentIndex + 1 });
         } else {
             console.log('Last item.');
-            navigation.navigate('Root', {
-                screen: 'דף הבית'
+            navigation.navigate('Root', 'דף הבית',{
+                screen: 'nestedH'
             });
 
             try {
