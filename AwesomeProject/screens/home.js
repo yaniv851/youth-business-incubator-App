@@ -25,6 +25,11 @@ function HomeScreen() {
     setShowView3(true);
   };
 
+
+  const chatnavi = () => {
+    navigation.navigate("chat")
+  }
+
   const animatedValue = new Animated.Value(0);
 
   const opacityAnimation = Animated.timing(animatedValue, {
@@ -59,15 +64,15 @@ function HomeScreen() {
           }
           {showView3 &&
             <Animated.View style={{ width: 90, height: 50, position: 'relative', opacity: animatedValue }} >
-              <Text>הפנייה לצ'אט</Text>
+              <Text onPress={chatnavi}>הפנייה לצ'אט</Text>
             </Animated.View>
           }
 
         </View>
-        <Text>Home</Text>
-        <TouchableOpacity onPress={clearOnboarding}>
+        {/* <Text>Home</Text> */}
+        {/* <TouchableOpacity onPress={clearOnboarding}>
           <Text>clear</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <FlatList />
       </View>
 

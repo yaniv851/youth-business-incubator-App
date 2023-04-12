@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, SafeAreaView } from 'react-native'
 import React, { useState } from 'react'
 import CustomInput from '../components/customInput/custumInput'
 import CustomButton from '../components/customButton/customButton'
@@ -18,7 +18,7 @@ export default function ForgotPasswordScreen() {
 
     return (
         <ScrollView>
-            <View style={[styles.root]}>
+            <SafeAreaView style={[styles.root]}>
                 <Text style={styles.title}>Reset your password</Text>
 
 
@@ -36,7 +36,7 @@ export default function ForgotPasswordScreen() {
                     type="TERTIARY"
                 />
 
-            </View>
+            </SafeAreaView>
         </ScrollView>
     );
 };

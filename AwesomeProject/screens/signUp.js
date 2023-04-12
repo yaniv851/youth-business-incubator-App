@@ -1,20 +1,36 @@
-import { View, Text, StyleSheet, ScrollView, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, useWindowDimensions, SafeAreaView } from 'react-native';
 import React, { useState } from 'react';
 import CustomInput from '../components/customInput/custumInput';
 import CustomButton from '../components/customButton/customButton';
 import SocialSignInButtons from '../components/socialSignInButtons/SocialSignInButtons';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 
 export default function SignUp() {
     const navigation = useNavigation();
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [passwordRepeat, setPasswordRepeat] = useState('');
+    const [fullName, setFullName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [passwordRepeat, setPasswordRepeat] = useState("");
+
+    // const onSignUpPressed = () => {
+    //     navigation.navigate("confirm");
+    // };
 
     const onSignUpPressed = () => {
-        navigation.navigate("confirm");
+        axios.post('http://10.100.102.23:3002/api/users', {
+            fullName: fullName,
+            gmail: email,
+            password: password,
+        })
+            .then(response => {
+                console.log(response.data);
+            })
+            .catch(error => {
+                console.error(error);
+            });
     };
+
 
     const onSignInPressed = () => {
         navigation.navigate("login");
@@ -29,35 +45,35 @@ export default function SignUp() {
     };
 
     return (
-        <ScrollView>
+        <SafeAreaView style={[styles.contis]}>
             <View style={[styles.root]}>
-                <Text style={styles.title}>Create an account</Text>
+                <Text style={styles.title}>צרו חשבון</Text>
 
 
                 <CustomInput
-                    placeholder="Username"
-                    value={username}
-                    setValue={setUsername}
+                    placeholder="שם מלא"
+                    value={fullName}
+                    setValue={setFullName}
                 />
                 <CustomInput
-                    placeholder="Email"
+                    placeholder="אימייל"
                     value={email}
                     setValue={setEmail}
                 />
                 <CustomInput
-                    placeholder="Password"
+                    placeholder="סיסמה"
                     value={password}
                     setValue={setPassword}
                     secureTextEntry
                 />
                 <CustomInput
-                    placeholder="Repeat Password"
+                    placeholder="חזרו על הסיסמה"
                     value={passwordRepeat}
                     setValue={setPasswordRepeat}
                     secureTextEntry
                 />
 
-                <CustomButton text="Sign up" onPress={onSignUpPressed} />
+                <CustomButton text="הירשמו" onPress={onSignUpPressed} />
 
                 <Text style={styles.text}>
                     By registering, you confirm that you accept our{''}
@@ -65,7 +81,7 @@ export default function SignUp() {
                     <Text style={styles.link} onPress={onPrivacyPressed}> Privacy Policy</Text>
                 </Text>
 
-                <SocialSignInButtons />
+                {/* <SocialSignInButtons /> */}
 
                 <CustomButton
                     text="Have an account? Sign in"
@@ -74,17 +90,24 @@ export default function SignUp() {
                 />
 
             </View>
-        </ScrollView>
+        </SafeAreaView>
     );
 };
 
 
 
 const styles = StyleSheet.create({
+    contis:{
+        flex: 1,
+        justifyContent: 'center',
+    },
     root: {
         alignItems: 'center',
         padding: 20,
         backgroundColor: '#F9FBFC',
+        height: '100%',
+        flex: 1,
+        justifyContent: 'center'
     },
     title: {
         fontSize: 24,
