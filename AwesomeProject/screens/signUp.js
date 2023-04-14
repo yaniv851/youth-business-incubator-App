@@ -5,6 +5,7 @@ import CustomButton from '../components/customButton/customButton';
 import SocialSignInButtons from '../components/socialSignInButtons/SocialSignInButtons';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SignUp() {
     const navigation = useNavigation();
@@ -12,25 +13,49 @@ export default function SignUp() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [passwordRepeat, setPasswordRepeat] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
+    const validateForm = () => {
+        if (!fullName.trim() || !email.trim() || !password.trim() || !passwordRepeat.trim()) {
+            setError("All fields are required.");
+            return false;
+        }
+        if (password !== passwordRepeat) {
+            setError("Passwords do not match.");
+            return false;
+        }
+        return true;
+    };
     // const onSignUpPressed = () => {
     //     navigation.navigate("confirm");
     // };
 
     const onSignUpPressed = () => {
-        axios.post('http://10.100.102.23:3002/api/users', {
-            fullName: fullName,
-            gmail: email,
-            password: password,
-        })
-            .then(response => {
-                console.log(response.data);
+        if (!validateForm()) return;
+        setLoading(true);
+        axios
+            .post("http://10.100.102.23:3002/api/users", {
+                fullName: fullName,
+                email: email,
+                password: password,
             })
-            .catch(error => {
+            .then((response) => {
+                console.log(response.data);
+                setLoading(false);
+                // Store the login status in AsyncStorage
+                AsyncStorage.setItem("@is_logged_in", "true");
+                // Store the user's email in AsyncStorage
+                AsyncStorage.setItem('@user_fullName', fullName);
+                // Navigate to the confirmation screen
+                navigation.navigate("success");
+            })
+            .catch((error) => {
                 console.error(error);
+                setLoading(false);
+                setError("An error occurred. Please try again later.");
             });
     };
-
 
     const onSignInPressed = () => {
         navigation.navigate("login");
@@ -48,7 +73,7 @@ export default function SignUp() {
         <SafeAreaView style={[styles.contis]}>
             <View style={[styles.root]}>
                 <Text style={styles.title}>צרו חשבון</Text>
-
+                {error ? <Text style={styles.error}>{error}</Text> : null}
 
                 <CustomInput
                     placeholder="שם מלא"
@@ -97,7 +122,7 @@ export default function SignUp() {
 
 
 const styles = StyleSheet.create({
-    contis:{
+    contis: {
         flex: 1,
         justifyContent: 'center',
     },
@@ -121,5 +146,8 @@ const styles = StyleSheet.create({
     },
     link: {
         color: '#FDB075'
+    },
+    error: {
+        color: 'red'
     }
 });

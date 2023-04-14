@@ -7,6 +7,7 @@ const fs = require('fs');
 app.use(express.json());
 
 let users = [];
+let chats = [];
 
 // Read the CSV file and store the data in an array of objects
 fs.createReadStream('RegisterDB.csv')
@@ -15,7 +16,17 @@ fs.createReadStream('RegisterDB.csv')
         users.push(data);
     })
     .on('end', () => {
-        console.log('CSV file successfully processed');
+        console.log('register csv database file successfully processed');
+    });
+
+// Read the CSV file and store the data in an array of objects
+fs.createReadStream('Chat.csv')
+    .pipe(csv())
+    .on('data', (data) => {
+        chats.push(data);
+    })
+    .on('end', () => {
+        console.log('chat csv database file successfully processed');
     });
 
 app.post('/api/users', (req, res) => {
@@ -30,6 +41,31 @@ app.post('/api/users', (req, res) => {
 app.get('/api/users', (req, res) => {
     res.json(users);
 });
+
+app.post('/api/chat', (req, res) => {
+    const newMessage = req.body;
+    chats.push(newMessage);
+    const ws = fs.createReadStream('Chat.csv', {flags: 'a'});
+    ws.write(`${newMessage.Text},${newMessage.byWho}\n`);
+    ws.end();
+    res.json(chats);
+} )
+
+
+
+app.get('/api/chat', (req, res) => {
+    res.json(chats);
+});
+
+app.get('/api/users/:fullName', (req, res) => {
+    const fullName = req.params.fullName;
+    const user = users.find(u => u.fullName === fullName);
+    if (user) {
+      res.json(user);
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
+  });
 
 // Start the server on port 3002
 app.listen(3002, () => {

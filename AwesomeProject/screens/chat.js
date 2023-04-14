@@ -36,7 +36,6 @@ export default function Chat() {
             <Text>{item.text}</Text>
           </View>
         )}
-        inverted // Scroll to bottom by default
       />
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10 }}>
         <TextInput
