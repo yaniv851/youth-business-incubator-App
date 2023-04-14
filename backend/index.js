@@ -34,7 +34,7 @@ app.post('/api/users', (req, res) => {
     const newUser = req.body;
     users.push(newUser);
     const ws = fs.createWriteStream('RegisterDB.csv', { flags: 'a' });
-    ws.write(`${newUser.fullName},${newUser.gmail},${newUser.password}\n`);
+    ws.write(`${newUser.fullName},${newUser.password}\n`);
     ws.end();
     res.json(users);
 });

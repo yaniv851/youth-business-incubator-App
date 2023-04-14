@@ -61,7 +61,9 @@ export default function ProfileScreen({ isSignedIn }) {
                 <View style={styles.userInfoContainer}>
                     <Text style={styles.nameText}>{fullName}</Text>
                     <TouchableOpacity style={styles.editButton}>
-                        <Text style={styles.editButtonText}>Edit Profile</Text>
+                        <Text style={styles.editButtonText}>
+                            הרשמה למיונים
+                        </Text>
                     </TouchableOpacity>
                 </View>
             </View>

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, useWindowDimensions, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, NativeModules, useWindowDimensions, SafeAreaView } from 'react-native';
 import React, { useState } from 'react';
 import CustomInput from '../components/customInput/custumInput';
 import CustomButton from '../components/customButton/customButton';
@@ -37,7 +37,6 @@ export default function SignUp() {
         axios
             .post("http://10.100.102.23:3002/api/users", {
                 fullName: fullName,
-                email: email,
                 password: password,
             })
             .then((response) => {
@@ -48,7 +47,9 @@ export default function SignUp() {
                 // Store the user's email in AsyncStorage
                 AsyncStorage.setItem('@user_fullName', fullName);
                 // Navigate to the confirmation screen
-                navigation.navigate("success");
+                navigation.navigate("פרופיל");
+                NativeModules.DevSettings.reload();
+
             })
             .catch((error) => {
                 console.error(error);
@@ -79,11 +80,6 @@ export default function SignUp() {
                     placeholder="שם מלא"
                     value={fullName}
                     setValue={setFullName}
-                />
-                <CustomInput
-                    placeholder="אימייל"
-                    value={email}
-                    setValue={setEmail}
                 />
                 <CustomInput
                     placeholder="סיסמה"
