@@ -25,36 +25,42 @@ export default function SignIn() {
     }
 
     return (
-        <ScrollView>
+        <ScrollView style={{ height: '100%', backgroundColor: '#F9FBFC',  }}>
             <View style={[styles.root]}>
                 <Image source={Logo} style={[styles.logo, { height: height * 0.3, resizeMode: "contain" }]} />
 
 
                 <CustomInput
-                    placeholder="Username"
+                    placeholder="שם משתמש"
                     value={username}
                     setValue={setUsername}
                 />
 
                 <CustomInput
-                    placeholder="Password"
+                    placeholder="סיסמה"
                     value={password}
                     setValue={setPassword}
                     secureTextEntry
                 />
 
-                <CustomButton text="Sign In" onPress={onSignInPressed} />
+                <CustomButton text="התחבר" onPress={onSignInPressed} />
 
                 <CustomButton
-                    text="Forgot password?"
+                    text="שכחת סיסמה?"
                     onPress={onForgotPasswordPressed}
                     type="TERTIARY"
                 />
 
-                <SocialSignInButtons />
+                <CustomButton
+                    text="התחבר כמדריך"
+                    onPress={onForgotPasswordPressed}
+                    type="PRIMARY"
+                    style={{ backgroundColor: "red" }}
+                />
+
 
                 <CustomButton
-                    text="Dont have an account? Create one"
+                    text="אין לך חשבון? צור אחד"
                     onPress={onSignUpPressed}
                     type="TERTIARY"
                 />

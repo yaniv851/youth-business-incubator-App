@@ -8,6 +8,7 @@ app.use(express.json());
 
 let users = [];
 let chats = [];
+let mentors = [];
 
 // Read the CSV file and store the data in an array of objects
 fs.createReadStream('RegisterDB.csv')
@@ -42,14 +43,28 @@ app.get('/api/users', (req, res) => {
     res.json(users);
 });
 
+app.post('/api/mentors', (req, res) => {
+    const newMentor = req.body;
+    mentors.push(newMentor);
+    const ws = fs.createWriteStream('MentorDB.csv', { flags: 'a' });
+    ws.write(`${newMentor.fullName},${newMentor.password}\n`);
+    ws.end();
+    res.json(mentors);
+});
+
+app.get('/api/mentors', (req, res) => {
+    res.json(mentors);
+})
+
+
 app.post('/api/chat', (req, res) => {
     const newMessage = req.body;
     chats.push(newMessage);
-    const ws = fs.createReadStream('Chat.csv', {flags: 'a'});
+    const ws = fs.createReadStream('Chat.csv', { flags: 'a' });
     ws.write(`${newMessage.Text},${newMessage.byWho}\n`);
     ws.end();
     res.json(chats);
-} )
+})
 
 
 
@@ -61,11 +76,11 @@ app.get('/api/users/:fullName', (req, res) => {
     const fullName = req.params.fullName;
     const user = users.find(u => u.fullName === fullName);
     if (user) {
-      res.json(user);
+        res.json(user);
     } else {
-      res.status(404).json({ error: 'User not found' });
+        res.status(404).json({ error: 'User not found' });
     }
-  });
+});
 
 // Start the server on port 3002
 app.listen(3002, () => {

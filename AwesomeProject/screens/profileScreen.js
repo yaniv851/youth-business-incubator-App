@@ -3,11 +3,13 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
+import { useNavigation } from '@react-navigation/native';
+import { NativeModules } from "react-native";
 
 export default function ProfileScreen({ isSignedIn }) {
     const [fullName, setFullName] = useState('');
     const [isOnline, setIsOnline] = useState(navigator.onLine);
-
+    const navigation = useNavigation();
 
     useEffect(() => {
         async function fetchFullName() {
@@ -39,6 +41,10 @@ export default function ProfileScreen({ isSignedIn }) {
         try {
             // Remove the user's email from the AsyncStorage
             await AsyncStorage.removeItem('@is_logged_in');
+            // Reset the navigation stack and navigate to the login screen
+            NativeModules.DevSettings.reload();
+
+            navigation.navigate('login'); // Navigate to the login screen after the user logs out
             // Reset the fullName state
             setFullName('');
         } catch (error) {
