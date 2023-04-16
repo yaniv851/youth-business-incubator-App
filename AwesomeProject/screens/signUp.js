@@ -6,9 +6,11 @@ import SocialSignInButtons from '../components/socialSignInButtons/SocialSignInB
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { RadioButton } from 'react-native-paper';
 
 export default function SignUp() {
     const navigation = useNavigation();
+    const [checked, setChecked] = useState(false);
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -17,7 +19,7 @@ export default function SignUp() {
     const [error, setError] = useState("");
 
     const validateForm = () => {
-        if (!fullName.trim() || !email.trim() || !password.trim() || !passwordRepeat.trim()) {
+        if (!fullName.trim() || !password.trim() || !passwordRepeat.trim()) {
             setError("All fields are required.");
             return false;
         }
@@ -35,9 +37,10 @@ export default function SignUp() {
         if (!validateForm()) return;
         setLoading(true);
         axios
-            .post("http://10.100.102.23:3002/api/users", {
+            .post(`http://10.100.102.23:3002/api/users`, {
                 fullName: fullName,
                 password: password,
+                isMentor: checked,
             })
             .then((response) => {
                 console.log(response.data);
@@ -93,6 +96,16 @@ export default function SignUp() {
                     setValue={setPasswordRepeat}
                     secureTextEntry
                 />
+
+                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                    <RadioButton
+                        style={{ color: 'green' }}
+                        value="mentor"
+                        status={checked ? 'checked' : 'unchecked'}
+                        onPress={() => setChecked(true)}
+                    />
+                    <Text>אני מנטור</Text>
+                </View>
 
                 <CustomButton text="הירשמו" onPress={onSignUpPressed} />
 

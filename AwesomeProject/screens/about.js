@@ -1,11 +1,24 @@
 import { View, Text, TouchableOpacity, ScrollView, Animated } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFonts } from 'expo-font';
-
+import axios from 'axios';
 export default function About() {
   const [showView1, setShowView1] = useState(false);
   const [showView2, setShowView2] = useState(false);
   const [showView3, setShowView3] = useState(false);
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+      axios.get('http://10.100.102.23:3002/api/users')
+          .then(response => {
+              setUsers(response.data);
+          })
+          .catch(error => {
+              console.log(error);
+          });
+  }, []);
+
+  console.log('users:', users);
 
   const handleTouchableOpacity1Click = () => {
     setShowView1(true);

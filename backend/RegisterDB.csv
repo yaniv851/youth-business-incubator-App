@@ -1,1 +1,2 @@
-full name,password
+fullName,password,isMentor
+Yaniv,Y,true

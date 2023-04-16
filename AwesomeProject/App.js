@@ -52,7 +52,11 @@ function OnboardingScreen() {
 }
 
 function SettingsScreen() {
-  return <Text>Settings</Text>;
+  return (
+    <View style={{ flex: 1, alignItems: 'center', marginTop: 50 }}>
+      <Text>חממות קרובות</Text>
+    </View>
+  );
 }
 
 // function ProfileScreen() {

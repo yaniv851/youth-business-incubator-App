@@ -18,6 +18,8 @@ fs.createReadStream('RegisterDB.csv')
     })
     .on('end', () => {
         console.log('register csv database file successfully processed');
+        console.log('users:', users);  // added log
+
     });
 
 // Read the CSV file and store the data in an array of objects
@@ -29,15 +31,18 @@ fs.createReadStream('Chat.csv')
     .on('end', () => {
         console.log('chat csv database file successfully processed');
     });
-
-app.post('/api/users', (req, res) => {
-    const newUser = req.body;
-    users.push(newUser);
-    const ws = fs.createWriteStream('RegisterDB.csv', { flags: 'a' });
-    ws.write(`${newUser.fullName},${newUser.password}\n`);
-    ws.end();
-    res.json(users);
-});
+    
+    app.post('/api/users', (req, res) => {
+        const newUser = req.body;
+        const isDuplicate = users.some(user => user.fullName === newUser.fullName);
+        if (!isDuplicate) {
+          users.push(newUser);
+          const ws = fs.createWriteStream('RegisterDB.csv', { flags: 'a' });
+          ws.write(`${newUser.fullName},${newUser.password},${newUser.isMentor}\n`);
+          ws.end();
+        }
+        res.json(users);
+      });
 
 app.get('/api/users', (req, res) => {
     res.json(users);

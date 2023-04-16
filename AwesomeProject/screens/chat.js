@@ -30,7 +30,7 @@ export default function Chat() {
     <View style={{ flex: 1 }}>
       <FlatList
         data={messages}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={{ marginVertical: 10, paddingHorizontal: 20 }}>
             <Text>{item.text}</Text>
