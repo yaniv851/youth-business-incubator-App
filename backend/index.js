@@ -38,7 +38,7 @@ fs.createReadStream('Chat.csv')
         if (!isDuplicate) {
           users.push(newUser);
           const ws = fs.createWriteStream('RegisterDB.csv', { flags: 'a' });
-          ws.write(`${newUser.fullName},${newUser.password},${newUser.isMentor}\n`);
+          ws.write(`${newUser.fullName},${newUser.password},${newUser.isMentor},${newUser.phoneNumber}\n`);
           ws.end();
         }
         res.json(users);

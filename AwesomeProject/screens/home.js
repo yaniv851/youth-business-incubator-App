@@ -61,6 +61,15 @@ function HomeScreen() {
     navigation.navigate("אודות");
   }
 
+  const clearOnboarding = async () => {
+    try {
+      await AsyncStorage.removeItem('@viewedOnboarding');
+    } catch (err) {
+      console.log('Error @clearOnboarding', err)
+    }
+  }
+
+
 
   return (
     <ScrollView style={{ backgroundColor: 'white', flex: 1, position: "relative" }}>

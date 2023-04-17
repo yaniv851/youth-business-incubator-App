@@ -12,14 +12,14 @@ export default function SignUp() {
     const navigation = useNavigation();
     const [checked, setChecked] = useState(false);
     const [fullName, setFullName] = useState("");
-    const [email, setEmail] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
     const [password, setPassword] = useState("");
     const [passwordRepeat, setPasswordRepeat] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
     const validateForm = () => {
-        if (!fullName.trim() || !password.trim() || !passwordRepeat.trim()) {
+        if (!fullName.trim() || !phoneNumber.trim() || !password.trim() || !passwordRepeat.trim()) {
             setError("All fields are required.");
             return false;
         }
@@ -41,6 +41,7 @@ export default function SignUp() {
                 fullName: fullName,
                 password: password,
                 isMentor: checked,
+                phoneNumber: phoneNumber,
             })
             .then((response) => {
                 console.log(response.data);
@@ -83,6 +84,11 @@ export default function SignUp() {
                     placeholder="שם מלא"
                     value={fullName}
                     setValue={setFullName}
+                />
+                <CustomInput
+                    placeholder="מספר טלפון"
+                    value={phoneNumber}
+                    setValue={setPhoneNumber}
                 />
                 <CustomInput
                     placeholder="סיסמה"

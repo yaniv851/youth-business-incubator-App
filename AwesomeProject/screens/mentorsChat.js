@@ -42,24 +42,24 @@ export default function MentorsChat() {
     }
 
     const onWhatsAppPress = (item) => {
-        const message = 'Hello, I would like to chat with you.';
-        const phoneNumber = item.whatsappNumber;
-        const url = `whatsapp://send?phone=${phoneNumber}&text=${message}`;
+        const message = `Hello, I would like to chat with you.\n my name is ${item.fullName} and I need help.`;
+        const Number = item.phoneNumber;
+        const url = `whatsapp://send?phone=${Number}&text=${message}`;
         Linking.openURL(url);
-      }
-
+    }
 
     const renderItem = ({ item }) => {
-        const backgroundColor = item.id === selectedId ? "#6e3b6e" : "#f9c2ff";
+        const backgroundColor = item.id === selectedId ? "#F9FBFC" : "#56A309";
+        const color = item.id === selectedId ? "#000" : "#fff";
 
         return (
             <TouchableOpacity onPress={() => setSelectedId(item.id)} style={[styles.item, { backgroundColor }]}>
-                <Text style={styles.title}>{item.fullName}</Text>
+                <Text style={[styles.title, { color }]}>{item.fullName}</Text>
                 <TouchableOpacity onPress={() => onZoomPress(item)}>
-                    <Text>Open Zoom Meeting</Text>
+                    <Text style={[{ color }]}>Open Zoom Meeting</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => onWhatsAppPress(item)}>
-                    <Text>Open WhatsApp Chat</Text>
+                    <Text style={[{ color }]}>Open WhatsApp Chat</Text>
                 </TouchableOpacity>
             </TouchableOpacity>
         );
@@ -85,9 +85,11 @@ const styles = StyleSheet.create({
     },
     item: {
         backgroundColor: '#f9c2ff',
+        color: '#fff',
         padding: 20,
         marginVertical: 8,
         marginHorizontal: 16,
+        borderRadius: 20
     },
     title: {
         fontSize: 32,
