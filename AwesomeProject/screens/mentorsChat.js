@@ -1,6 +1,7 @@
 import { View, Text, FlatList, StyleSheet, StatusBar, TouchableOpacity } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
 import { Linking } from 'react-native';
 import { sendWhatsapp } from 'react-native-send-intent';
 
@@ -20,10 +21,11 @@ import { sendWhatsapp } from 'react-native-send-intent';
 export default function MentorsChat() {
     const [selectedId, setSelectedId] = useState(null);
     const [users, setUsers] = useState([]);
+    const navigation = useNavigation();
     console.log(sendWhatsapp);
 
     useEffect(() => {
-        axios.get('http://10.100.102.23:3002/api/users')
+        axios.get('http://192.168.251.2:3002/api/users')
             .then(response => {
                 const filteredUsers = response.data.filter(user => user.isMentor === true);
                 setUsers(filteredUsers);
@@ -41,12 +43,12 @@ export default function MentorsChat() {
         // Open a Zoom meeting here
     }
 
-    const onWhatsAppPress = (item) => {
-        const message = `Hello, I would like to chat with you.\n my name is ${item.fullName} and I need help.`;
-        const Number = item.phoneNumber;
-        const url = `whatsapp://send?phone=${Number}&text=${message}`;
-        Linking.openURL(url);
-    }
+    // const onWhatsAppPress = (item) => {
+    //     const message = `Hello, I would like to chat with you.\n my name is ${item.fullName} and I need help.`;
+    //     const Number = item.phoneNumber;
+    //     const url = `whatsapp://send?phone=${Number}&text=${message}`;
+    //     Linking.openURL(url);
+    // }
 
     const renderItem = ({ item }) => {
         const backgroundColor = item.id === selectedId ? "#F9FBFC" : "#56A309";
@@ -58,7 +60,7 @@ export default function MentorsChat() {
                 <TouchableOpacity onPress={() => onZoomPress(item)}>
                     <Text style={[{ color }]}>Open Zoom Meeting</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => onWhatsAppPress(item)}>
+                <TouchableOpacity onPress={() => navigation.navigate('chat', { mentor: item })}>
                     <Text style={[{ color }]}>Open WhatsApp Chat</Text>
                 </TouchableOpacity>
             </TouchableOpacity>

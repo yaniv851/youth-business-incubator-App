@@ -1,53 +1,62 @@
 import { View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import React, { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { GiftedChat } from 'react-native-gifted-chat';
+import axios from 'axios';
 
-export default function Chat() {
-  const [message, setMessage] = useState('');
+export default function Chat({ route }) {
+  const { mentor } = route.params;
   const [messages, setMessages] = useState([]);
+  const [fullName, setFullName] = useState('');
 
   useEffect(() => {
-    // Load initial messages
-    // You can load messages from a database or API call here
-    setMessages([
-      { id: 1, text: 'Hello!' },
-      { id: 2, text: 'How are you?' },
-      { id: 3, text: 'I am doing well, thank you.' },
-      { id: 4, text: 'How about you?' },
-    ]);
+    async function fetchFullName() {
+      try {
+        // Retrieve the user's email from the AsyncStorage
+        const fullName = await AsyncStorage.getItem('@user_fullName');
+        if (fullName) {
+          // Fetch the user's data from the API using their email
+          const response = await axios.get(`http://192.168.251.2:3002/api/users/${fullName}`);
+          setFullName(response.data.fullName);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchFullName();
   }, []);
 
-  const sendMessage = () => {
-    if (message) {
-      // Add new message to state
-      const newMessage = { id: messages.length + 1, text: message };
-      setMessages([...messages, newMessage]);
-      // Clear message input
-      setMessage('');
+
+
+  async function onSend(newMessages = []) {
+    const message = {
+      text: newMessages[0].text,
+      sender: fullName,
+      recipient: mentor.fullName,
+    };
+
+    try {
+      await axios.post(`http://192.168.251.2:3002/api/chats`, message);
+      setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages));
+    } catch (error) {
+      console.log(error);
     }
-  };
+  }
 
   return (
     <View style={{ flex: 1 }}>
-      <FlatList
-        data={messages}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={{ marginVertical: 10, paddingHorizontal: 20 }}>
-            <Text>{item.text}</Text>
-          </View>
-        )}
-      />
-      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10 }}>
-        <TextInput
-          placeholder="Type your message here"
-          value={message}
-          onChangeText={(text) => setMessage(text)}
-          style={{ flex: 1, borderWidth: 1, borderColor: 'gray', borderRadius: 10, paddingHorizontal: 10, paddingVertical: 5, marginRight: 10 }}
-        />
-        <TouchableOpacity onPress={sendMessage} style={{ backgroundColor: 'blue', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 }}>
-          <Text style={{ color: 'white' }}>Send</Text>
-        </TouchableOpacity>
+      <View style={{ flex: 1, alignItems: 'center', marginTop: 50 }}>
+        <Text>Chat with {mentor.fullName}</Text>
       </View>
+      <GiftedChat
+        messages={messages}
+        onSend={onSend}
+        user={{
+          _id: 1, // replace with actual user ID
+          name: fullName, // replace with actual user name
+        }}
+      />
     </View>
   );
 }

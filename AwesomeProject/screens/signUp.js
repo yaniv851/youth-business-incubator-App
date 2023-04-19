@@ -12,14 +12,14 @@ export default function SignUp() {
     const navigation = useNavigation();
     const [checked, setChecked] = useState(false);
     const [fullName, setFullName] = useState("");
-    const [phoneNumber, setPhoneNumber] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [passwordRepeat, setPasswordRepeat] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
     const validateForm = () => {
-        if (!fullName.trim() || !phoneNumber.trim() || !password.trim() || !passwordRepeat.trim()) {
+        if (!fullName.trim() || !password.trim() || !passwordRepeat.trim()) {
             setError("All fields are required.");
             return false;
         }
@@ -37,11 +37,10 @@ export default function SignUp() {
         if (!validateForm()) return;
         setLoading(true);
         axios
-            .post(`http://10.100.102.23:3002/api/users`, {
+            .post(`http://192.168.251.2:3002/api/users`, {
                 fullName: fullName,
                 password: password,
                 isMentor: checked,
-                phoneNumber: phoneNumber,
             })
             .then((response) => {
                 console.log(response.data);
@@ -84,11 +83,6 @@ export default function SignUp() {
                     placeholder="שם מלא"
                     value={fullName}
                     setValue={setFullName}
-                />
-                <CustomInput
-                    placeholder="מספר טלפון"
-                    value={phoneNumber}
-                    setValue={setPhoneNumber}
                 />
                 <CustomInput
                     placeholder="סיסמה"

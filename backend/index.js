@@ -2,6 +2,8 @@ const express = require('express');
 const app = express();
 const csv = require('csv-parser');
 const fs = require('fs');
+const csvWriter = require('csv-write-stream');
+const { v4: uuidv4 } = require('uuid');
 
 // Parse JSON request bodies
 app.use(express.json());
@@ -9,6 +11,9 @@ app.use(express.json());
 let users = [];
 let chats = [];
 let mentors = [];
+const messages = [];
+
+
 
 // Read the CSV file and store the data in an array of objects
 fs.createReadStream('RegisterDB.csv')
@@ -23,26 +28,48 @@ fs.createReadStream('RegisterDB.csv')
     });
 
 // Read the CSV file and store the data in an array of objects
-fs.createReadStream('Chat.csv')
-    .pipe(csv())
-    .on('data', (data) => {
-        chats.push(data);
-    })
-    .on('end', () => {
-        console.log('chat csv database file successfully processed');
-    });
-    
-    app.post('/api/users', (req, res) => {
-        const newUser = req.body;
-        const isDuplicate = users.some(user => user.fullName === newUser.fullName);
-        if (!isDuplicate) {
-          users.push(newUser);
-          const ws = fs.createWriteStream('RegisterDB.csv', { flags: 'a' });
-          ws.write(`${newUser.fullName},${newUser.password},${newUser.isMentor},${newUser.phoneNumber}\n`);
-          ws.end();
-        }
-        res.json(users);
-      });
+// fs.createReadStream('Chat.csv')
+//     .pipe(csv())
+//     .on('data', (data) => {
+//         chats.push(data);
+//     })
+//     .on('end', () => {
+//         console.log('register csv database file successfully processed');
+//         console.log('chats:', chats);  // added log
+
+//     });
+
+
+// app.get('/api/messages', (req, res) => {
+//     res.json(chats);
+// })
+
+
+app.post('/api/users', (req, res) => {
+    const newUser = req.body;
+    const isDuplicate = users.some(user => user.fullName === newUser.fullName);
+    if (!isDuplicate) {
+        users.push(newUser);
+        const ws = fs.createWriteStream('RegisterDB.csv', { flags: 'a' });
+        ws.write(`${newUser.fullName},${newUser.password},${newUser.isMentor}\n`);
+        ws.end();
+    }
+    res.json(users);
+});
+
+app.post('/api/chats', (req, res) => {
+    const newMessage = req.body;
+    chats.push(newMessage);
+    console.log('newMessage:', newMessage);
+    const ws = fs.createWriteStream('Chat.csv', { flags: 'a' });
+    ws.write(`${newMessage.text},${newMessage.sender},${newMessage.receiver}\n`);
+    ws.end();
+    res.json(chats);
+});
+
+app.get('/api/chats', (req, res) => {
+    res.json(chats);
+})
 
 app.get('/api/users', (req, res) => {
     res.json(users);
@@ -60,22 +87,6 @@ app.post('/api/mentors', (req, res) => {
 app.get('/api/mentors', (req, res) => {
     res.json(mentors);
 })
-
-
-app.post('/api/chat', (req, res) => {
-    const newMessage = req.body;
-    chats.push(newMessage);
-    const ws = fs.createReadStream('Chat.csv', { flags: 'a' });
-    ws.write(`${newMessage.Text},${newMessage.byWho}\n`);
-    ws.end();
-    res.json(chats);
-})
-
-
-
-app.get('/api/chat', (req, res) => {
-    res.json(chats);
-});
 
 app.get('/api/users/:fullName', (req, res) => {
     const fullName = req.params.fullName;
