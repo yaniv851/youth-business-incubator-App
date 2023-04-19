@@ -62,7 +62,7 @@ app.post('/api/chats', (req, res) => {
     chats.push(newMessage);
     console.log('newMessage:', newMessage);
     const ws = fs.createWriteStream('Chat.csv', { flags: 'a' });
-    ws.write(`${newMessage.text},${newMessage.sender},${newMessage.receiver}\n`);
+    ws.write(`${newMessage.text},${newMessage.sender},${newMessage.recipient}\n`);
     ws.end();
     res.json(chats);
 });
