@@ -7,17 +7,25 @@ import axios from 'axios';
 export default function Chat({ route }) {
   const { mentor } = route.params;
   const [messages, setMessages] = useState([]);
+  const [isMentor, setIsMentor] = useState(false);
   const [fullName, setFullName] = useState('');
 
   useEffect(() => {
+
     async function fetchFullName() {
       try {
         // Retrieve the user's email from the AsyncStorage
         const fullName = await AsyncStorage.getItem('@user_fullName');
+        const isMentor = await AsyncStorage.getItem('@is_mentor');
+
         if (fullName) {
           // Fetch the user's data from the API using their email
           const response = await axios.get(`http://192.168.251.2:3002/api/users/${fullName}`);
           setFullName(response.data.fullName);
+        }
+
+        if (isMentor == 'true') {
+          setIsMentor(true);
         }
       } catch (error) {
         console.error(error);
@@ -27,36 +35,72 @@ export default function Chat({ route }) {
     fetchFullName();
   }, []);
 
-
+  console.log(isMentor);
 
   async function onSend(newMessages = []) {
-    const message = {
-      text: newMessages[0].text,
-      sender: fullName,
-      recipient: mentor.fullName,
-    };
+    if (isMentor == false) {
+      const message = {
+        text: newMessages[0].text,
+        sender: fullName,
+        recipient: mentor.fullName,
+      };
 
-    try {
-      await axios.post(`http://192.168.251.2:3002/api/chats`, message);
-      setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages));
-    } catch (error) {
-      console.log(error);
+      try {
+        await axios.post(`http://192.168.251.2:3002/api/chats`, message);
+        setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages));
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    if (isMentor == false) {
+      const message = {
+        text: newMessages[0].text,
+        sender: mentor.fullName,
+        recipient: fullName,
+      };
+
+      try {
+        await axios.post(`http://192.168.251.2:3002/api/chats`, message);
+        setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages));
+      } catch (error) {
+        console.log(error);
+      }
     }
   }
 
-  return (
-    <View style={{ flex: 1 }}>
-      <View style={{ flex: 1, alignItems: 'center', marginTop: 50 }}>
-        <Text>Chat with {mentor.fullName}</Text>
+
+  if (isMentor == false) {
+    return (
+      <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, alignItems: 'center', marginTop: 50 }}>
+          <Text>Chat with {mentor.fullName}</Text>
+        </View>
+        <GiftedChat
+          messages={messages}
+          onSend={onSend}
+          user={{
+            name: fullName, // replace with actual user name
+          }}
+        />
       </View>
-      <GiftedChat
-        messages={messages}
-        onSend={onSend}
-        user={{
-          _id: 1, // replace with actual user ID
-          name: fullName, // replace with actual user name
-        }}
-      />
-    </View>
-  );
+    );
+  }
+
+  else if (isMentor == true) {
+    return (
+      <View style={{ flex: 1, marginTop: 30 }}>
+        <View style={{ flex: 1, alignItems: 'center', marginTop: 50 }}>
+          <Text>Chat with {fullName}</Text>
+        </View>
+        <GiftedChat
+          messages={messages}
+          onSend={onSend}
+          user={{
+            name: mentor.fullName, // replace with actual user name
+          }}
+        />
+      </View>
+    );
+  }
 }

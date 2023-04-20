@@ -5,17 +5,36 @@ import CustomInput from '../components/customInput/custumInput';
 import CustomButton from '../components/customButton/customButton';
 import { useNavigation } from '@react-navigation/native';
 import SocialSignInButtons from '../components/socialSignInButtons/SocialSignInButtons';
+import axios from 'axios';
 
 export default function SignIn() {
-    const [username, setUsername] = useState('');
+    const [fullName, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigation = useNavigation();
     const { height } = useWindowDimensions();
 
     const onSignInPressed = () => {
-        console.warn("Sign in");
-    }
+        const credentials = {
+            fullName: fullName,
+            password: password
+        };
 
+        axios.post('/api/users/login', { credentials })
+            .then(response => {
+                const user = response.data;
+                console.log(user)
+                if (user) {
+                    // Navigate to the profile screen of the user
+                    navigation.navigate('פרופיל', { user });
+                } else {
+                    // Handle invalid credentials
+                }
+            })
+            .catch(error => {
+                // Handle login error
+            });
+
+    }
     const onForgotPasswordPressed = () => {
         navigation.navigate("forgot password")
     }
@@ -25,14 +44,14 @@ export default function SignIn() {
     }
 
     return (
-        <ScrollView style={{ height: '100%', backgroundColor: '#F9FBFC',  }}>
+        <ScrollView style={{ height: '100%', backgroundColor: '#F9FBFC', }}>
             <View style={[styles.root]}>
                 <Image source={Logo} style={[styles.logo, { height: height * 0.3, resizeMode: "contain" }]} />
 
 
                 <CustomInput
                     placeholder="שם משתמש"
-                    value={username}
+                    value={fullName}
                     setValue={setUsername}
                 />
 

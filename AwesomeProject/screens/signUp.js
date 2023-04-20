@@ -47,8 +47,10 @@ export default function SignUp() {
                 setLoading(false);
                 // Store the login status in AsyncStorage
                 AsyncStorage.setItem("@is_logged_in", "true");
-                // Store the user's email in AsyncStorage
+                // Store the user's full name in AsyncStorage
                 AsyncStorage.setItem('@user_fullName', fullName);
+                // Store the user's isMentor in AsyncStorage
+                AsyncStorage.setItem('@is_mentor', JSON.stringify(checked));
                 // Navigate to the confirmation screen
                 navigation.navigate("פרופיל");
                 NativeModules.DevSettings.reload();

@@ -98,6 +98,30 @@ app.get('/api/users/:fullName', (req, res) => {
     }
 });
 
+// Define API route for login
+app.post('/api/users/login', (req, res) => {
+    const { fullName, password } = req.body;
+    let userExists = false;
+  
+    // Parse the CSV file and check if user exists
+    fs.createReadStream('RegisterDB.csv')
+      .pipe(csv())
+      .on('data', (row) => {
+        if (row.fullName === fullName && row.password === password) {
+          userExists = true;
+        }
+      })
+      .on('end', () => {
+        // Return response indicating whether user exists
+        if (userExists) {
+          res.json({ success: true });
+        } else {
+          res.json({ success: false, error: 'Invalid credentials' });
+        }
+      });
+  });
+  
+
 // Start the server on port 3002
 app.listen(3002, () => {
     console.log('Server started on port 3002');

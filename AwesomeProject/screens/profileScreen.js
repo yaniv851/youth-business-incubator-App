@@ -14,7 +14,7 @@ export default function ProfileScreen({ isSignedIn }) {
     useEffect(() => {
         async function fetchFullName() {
             try {
-                // Retrieve the user's email from the AsyncStorage
+                // Retrieve the user's full name from the AsyncStorage
                 const fullName = await AsyncStorage.getItem('@user_fullName');
                 if (fullName) {
                     // Fetch the user's data from the API using their email
